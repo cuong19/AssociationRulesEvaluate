@@ -1,4 +1,4 @@
-from neo4j.v1 import GraphDatabase, basic_auth
+from neo4j.v1 import GraphDatabase, basic_auth, exceptions as neo4jException
 
 
 class Neo4jDriver:
@@ -9,6 +9,7 @@ class Neo4jDriver:
         self.password = password
         self.driver = None
         self.session = None
+        self.result = None
 
     def connect(self):
         self.driver = GraphDatabase.driver("bolt://" + str(self.host) + ":" + str(self.port),
@@ -18,5 +19,19 @@ class Neo4jDriver:
     def disconnect(self):
         self.session.close()
 
-    def query(self, query, params):
-        self.session.run(query, params)
+    def query(self, query, params=None):
+        try:
+            if params is not None:
+                self.result = self.session.run(query, params)
+            else:
+                self.result = self.session.run(query)
+        except neo4jException:
+            raise Neo4jServiceUnavailableError
+
+
+class Neo4jError(Exception):
+    pass
+
+
+class Neo4jServiceUnavailableError(Exception):
+    pass
