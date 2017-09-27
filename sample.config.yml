@@ -1,0 +1,8 @@
+---
+source:
+  db_system: neo4j
+  host: 127.0.0.1
+  port: 7687
+  user: user
+  password: password
+...
